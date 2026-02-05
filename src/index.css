@@ -1,0 +1,19 @@
+:root {
+  font-family: "Karla", sans-serif;
+  background-color: #f5f7fb;
+  color: #293264;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
