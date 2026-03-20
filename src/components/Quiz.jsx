@@ -1,9 +1,12 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import he from "he";
 import clsx from "clsx";
 
-export default function Questions({ setQuestion, question }) {
-  const showResults = question.length > 0 && !!question[0].guessedAnswer;
+export default function Quiz() {
+  const [question, setQuestion] = useState([]);
+
+  const showResults =
+    question.length > 0 && question.every((q) => !!q.guessedAnswer);
 
   const fetchData = useCallback(async () => {
     try {
@@ -73,10 +76,14 @@ export default function Questions({ setQuestion, question }) {
   });
 
   function checkAnswers(formData) {
-    const selectedAnswers = question.map((data) => {
-      const guessedAnswer = formData.get(data.decodedQuestion);
-      return { ...data, guessedAnswer };
-    });
+    const selectedAnswers = question.map((data) => ({
+      ...data,
+      guessedAnswer: formData.get(data.decodedQuestion),
+    }));
+
+    if (selectedAnswers.some((q) => !q.guessedAnswer)) {
+      return alert("Odpowiedz na wszystkie pytania!");
+    }
     setQuestion(selectedAnswers);
   }
 

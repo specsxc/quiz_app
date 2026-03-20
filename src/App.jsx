@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-import WelcomeText from "./components/WelcomeText";
-import Questions from "./components/Questions";
+import WelcomeText from "./components/Home";
+import Questions from "./components/Quiz";
 
 export default function App() {
   const [page, setPage] = useState(1);
