@@ -1,19 +1,23 @@
 #root {
-  width: 800px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* Layout */
 
-.page-layout {
+/* .site-wrapper {
+
+} */
+
+/* Welcome page */
+
+.home-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 90vh;
 }
-
-/* Welcome page */
 
 .welcome-title {
   color: #293264;
@@ -27,17 +31,48 @@
   font-weight: 400;
 }
 
-.start-button {
-  background-color: #4d5b9e;
+/* Header */
+
+.header-container {
+  padding: 25px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-container {
+  display: flex;
+  gap: 45px;
+}
+
+.site-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #4f46e5;
+}
+
+.nav-link {
   font-weight: 500;
   border: none;
-  padding: 22px 70px;
-  border-radius: 15px;
   line-height: 1;
-  color: #f5f7fb;
-  font-size: 1rem;
+  color: #7b719d;
+  font-size: 1.25rem;
   cursor: pointer;
   text-decoration: none;
+}
+
+.active-link {
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 15px;
+  color: #4f46e5;
+}
+
+.account-icon {
+  font-size: 2rem;
+  color: #4f46e5;
+  cursor: pointer;
 }
 
 /* Questions page */
@@ -45,6 +80,7 @@
 .questions-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-top: 40px;
   gap: 15px;
 }

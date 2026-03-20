@@ -1,11 +1,12 @@
 :root {
-  font-family: "Karla", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   background-color: #f5f7fb;
   color: #293264;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scrollbar-gutter: stable;
 }
 
 button {
