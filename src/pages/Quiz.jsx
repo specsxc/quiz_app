@@ -1,21 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import he from "he";
 import clsx from "clsx";
+import getQuestions from "../utils/getQuestions";
 
 export default function Quiz() {
-  const [question, setQuestion] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const showResults =
-    question.length > 0 && question.every((q) => !!q.guessedAnswer);
+    questions.length > 0 && questions.every((q) => !!q.guessedAnswer);
 
-  const fetchData = useCallback(async () => {
+  const correctQuestions = questions.filter(
+    (q) => q.guessedAnswer === q.decodedCorrect,
+  );
+
+  async function loadQuestions() {
+    setLoading(true);
     try {
-      const res = await fetch(
-        "https://opentdb.com/api.php?amount=5&type=multiple",
-      );
-      if (!res.ok) throw new Error("Błąd API: " + res.status);
-      const data = await res.json();
-      const formattedData = data.results.map((question) => {
+      const data = await getQuestions();
+      const data2 = data.map((question) => {
         const decodedQuestion = he.decode(question.question);
         const decodedCorrect = he.decode(question.correct_answer);
         const decodedAnswers = [
@@ -32,17 +36,43 @@ export default function Quiz() {
           decodedCorrect,
         };
       });
-      setQuestion(formattedData);
+      setQuestions(data2);
     } catch (error) {
-      console.error("Wystąpił błąd:", error);
+      setError(error);
+    } finally {
+      setLoading(false);
     }
-  }, [setQuestion]);
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadQuestions();
+  }, []);
 
-  const questionHtml = question.map((chall, index) => {
+  function checkAnswers(formData) {
+    const selectedAnswers = questions.map((data) => ({
+      ...data,
+      guessedAnswer: formData.get(data.decodedQuestion),
+    }));
+
+    if (selectedAnswers.some((q) => !q.guessedAnswer)) {
+      return alert("Answer all questions!");
+    }
+    setQuestions(selectedAnswers);
+  }
+
+  function newGame() {
+    loadQuestions();
+  }
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
+
+  if (error) {
+    return <h2>There was an error: {error.message}</h2>;
+  }
+
+  const questionHtml = questions.map((chall, index) => {
     return (
       <div key={index} className="question-box">
         <h2 className="question-header">{chall.decodedQuestion}</h2>
@@ -75,47 +105,24 @@ export default function Quiz() {
     );
   });
 
-  function checkAnswers(formData) {
-    const selectedAnswers = question.map((data) => ({
-      ...data,
-      guessedAnswer: formData.get(data.decodedQuestion),
-    }));
-
-    if (selectedAnswers.some((q) => !q.guessedAnswer)) {
-      return alert("Odpowiedz na wszystkie pytania!");
-    }
-    setQuestion(selectedAnswers);
-  }
-
-  function newGame() {
-    setQuestion([]);
-    fetchData();
-  }
-
-  return question.length === 0 ? (
-    <h2 className="loading">Loading...</h2>
-  ) : (
+  return (
     <div className="questions-container">
       <form action={checkAnswers}>
         {questionHtml}
-        {!showResults && (
+        {showResults ? (
+          <div className="new-game-container">
+            <p className="new-game-text">
+              {`You scored
+            ${correctQuestions.length}/${questions.length} correct answers`}
+            </p>
+            <button type="button" onClick={newGame} className="new-game">
+              Play again
+            </button>
+          </div>
+        ) : (
           <button className="check-answers">Check answers</button>
         )}
       </form>
-      {showResults && (
-        <div className="new-game-container">
-          <p className="new-game-text">
-            {`You scored
-            ${
-              question.filter((q) => q.guessedAnswer === q.decodedCorrect)
-                .length
-            }/${question.length} correct answers`}
-          </p>
-          <button type="button" onClick={newGame} className="new-game">
-            Play again
-          </button>
-        </div>
-      )}
     </div>
   );
 }
