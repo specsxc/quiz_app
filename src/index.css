@@ -13,6 +13,11 @@ button {
   font-family: inherit;
 }
 
+button:disabled,
+button[disabled] {
+  cursor: not-allowed;
+}
+
 * {
   margin: 0;
   padding: 0;

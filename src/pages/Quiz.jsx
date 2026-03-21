@@ -7,6 +7,7 @@ export default function Quiz() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasError, setHasError] = useState(false);
 
   const showResults =
     questions.length > 0 && questions.every((q) => !!q.guessedAnswer);
@@ -55,8 +56,10 @@ export default function Quiz() {
     }));
 
     if (selectedAnswers.some((q) => !q.guessedAnswer)) {
-      return alert("Answer all questions!");
+      setHasError(true);
+      return;
     }
+    setHasError(false);
     setQuestions(selectedAnswers);
   }
 
@@ -64,43 +67,42 @@ export default function Quiz() {
     loadQuestions();
   }
 
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
+  if (loading) return <h2>Loading...</h2>;
 
-  if (error) {
-    return <h2>There was an error: {error.message}</h2>;
-  }
+  if (error) return <h2>There was an error: {error.message}</h2>;
 
-  const questionHtml = questions.map((chall, index) => {
+  const questionHtml = questions.map((question) => {
     return (
-      <div key={index} className="question-box">
-        <h2 className="question-header">{chall.decodedQuestion}</h2>
-        {chall.decodedAnswers.map((answer, index) => (
-          <label
-            htmlFor={answer}
-            key={index}
-            className={clsx(
-              "label",
-              chall.guessedAnswer && {
-                "good--answer": chall.decodedCorrect === chall.guessedAnswer,
-                "bad--answer": chall.decodedCorrect !== chall.guessedAnswer,
-                "highlight--answer": answer === chall.decodedCorrect,
-              },
-            )}
-          >
-            <input
-              type="radio"
-              id={answer}
-              className="input-radio"
-              name={chall.decodedQuestion}
-              value={answer}
-              defaultChecked={chall.guessedAnswer === answer}
-              disabled={!!chall.guessedAnswer}
-            />
-            {answer}
-          </label>
-        ))}
+      <div key={question.decodedQuestion} className="question-box">
+        <h2 className="question-header">{question.decodedQuestion}</h2>
+        {question.decodedAnswers.map((answer) => {
+          const isSelected = question.guessedAnswer === answer;
+          const isCorrect = answer === question.decodedCorrect;
+          const isFinished = !!question.guessedAnswer;
+          return (
+            <label
+              key={answer}
+              className={clsx(
+                "label",
+                isFinished && {
+                  "good--answer": isSelected && isCorrect,
+                  "bad--answer": isSelected && !isCorrect,
+                  "highlight--answer": isCorrect,
+                },
+              )}
+            >
+              <input
+                type="radio"
+                className="input-radio"
+                name={question.decodedQuestion}
+                value={answer}
+                defaultChecked={isSelected}
+                disabled={isFinished}
+              />
+              {answer}
+            </label>
+          );
+        })}
       </div>
     );
   });
@@ -113,7 +115,7 @@ export default function Quiz() {
           <div className="new-game-container">
             <p className="new-game-text">
               {`You scored
-            ${correctQuestions.length}/${questions.length} correct answers`}
+            ${correctQuestions.length}/${questions.length} correct answers!`}
             </p>
             <button type="button" onClick={newGame} className="new-game">
               Play again
@@ -122,6 +124,7 @@ export default function Quiz() {
         ) : (
           <button className="check-answers">Check answers</button>
         )}
+        {hasError && <p className="error-text">Answer all questions!</p>}
       </form>
     </div>
   );
