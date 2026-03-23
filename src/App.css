@@ -82,10 +82,38 @@
   position: absolute;
   top: 70px;
   right: 30px;
-  background-color: #4f46e5;
-  padding: 10px;
+  background-color: #4e46e517;
   border-radius: 15px;
-  color: white;
+  color: #334155;
+  font-weight: 500;
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  z-index: 10;
+  min-width: 250px;
+  overflow: hidden;
+}
+
+.menu-list {
+  list-style-type: none;
+}
+
+.menu-link {
+  padding: 15px 50px;
+  display: flex;
+  justify-content: flex-start;
+  text-decoration: none;
+  color: #334155;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.account-underline {
+  border-bottom: 2px solid rgb(209, 208, 208);
+}
+
+.menu-link:hover {
+  background-color: rgba(0, 0, 0, 0.055);
 }
 
 .menu-overlay {
@@ -94,7 +122,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 90;
+  z-index: 0;
 }
 
 /* Questions page */

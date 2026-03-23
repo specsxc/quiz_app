@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
+import { NavLink } from "react-router";
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,11 +29,36 @@ export default function DropdownMenu() {
               exit={{ opacity: 0, y: -5, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <p>DropdownMenu</p>
-              <p>Login</p>
-              <p>Register</p>
-              <p>Logout</p>
-              <p>DropdownMenu</p>
+              <ul className="menu-list">
+                <li>
+                  <NavLink
+                    to="/account"
+                    className="menu-link account-underline"
+                  >
+                    Account
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/login" className="menu-link">
+                    Login
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/register" className="menu-link">
+                    Register
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/logout" className="menu-link">
+                    Logout
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/footer" className="menu-link">
+                    Footer
+                  </NavLink>
+                </li>
+              </ul>
             </motion.div>
           </>
         )}
