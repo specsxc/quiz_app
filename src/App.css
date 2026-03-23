@@ -69,10 +69,32 @@
   color: #4f46e5;
 }
 
+/* Dropdown Menu */
+
 .account-icon {
+  position: relative;
   font-size: 2rem;
   color: #4f46e5;
   cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: 70px;
+  right: 30px;
+  background-color: #4f46e5;
+  padding: 10px;
+  border-radius: 15px;
+  color: white;
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
 }
 
 /* Questions page */
