@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavLink } from "react-router";
+import { GoSignOut } from "react-icons/go";
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function DropdownMenu() {
                     to="/account"
                     className="menu-link account-underline"
                   >
+                    <MdOutlineAccountCircle className="account-icon-menu" />
                     Account
                   </NavLink>
                 </li>
@@ -49,7 +51,8 @@ export default function DropdownMenu() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/logout" className="menu-link">
+                  <NavLink to="/logout" className="menu-link signout">
+                    <GoSignOut className="signout-icon" />
                     Logout
                   </NavLink>
                 </li>

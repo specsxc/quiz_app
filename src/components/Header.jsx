@@ -1,5 +1,4 @@
 import { NavLink, Link } from "react-router";
-import { MdOutlineAccountCircle } from "react-icons/md";
 import DropdownMenu from "./DropdownMenu";
 
 export default function Header() {
