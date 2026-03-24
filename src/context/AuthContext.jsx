@@ -1,15 +1,5 @@
-import supabase from "../supabase-client";
+import { createContext, useContext } from "react";
 
-export default function AuthContext() {
-  const testConnection = async () => {
-    const { data, error } = await supabase.from("test-table").select("*");
+export const AuthContext = createContext();
 
-    if (error) {
-      console.error("Błąd połączenia z Supabase:", error.message);
-    } else {
-      console.log("Połączenie udane! Dane:", data);
-    }
-  };
-  testConnection();
-  return <div>AuthContext</div>;
-}
+export const useAuth = () => useContext(AuthContext);
