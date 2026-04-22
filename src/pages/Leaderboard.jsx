@@ -43,7 +43,6 @@ export default function Leaderboard() {
         display: "flex",
         justifyContent: "center",
         padding: "40px",
-        backgroundColor: "#f0f2f5",
         maxHeight: "100vh",
       }}
     >
