@@ -31,12 +31,13 @@ export default function Leaderboard() {
       if (error) {
         throw error;
       }
-      setLead(data);
+      const sortedData = [...data].sort((a, b) => b.points - a.points);
+      setLead(sortedData);
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   }
-  lead && console.log(lead);
+  console.log(lead);
   return (
     <div
       style={{
@@ -67,7 +68,6 @@ export default function Leaderboard() {
         </Paper>
 
         <Table
-          striped
           highlightOnHover
           withTableBorder
           withColumnBorders
@@ -88,7 +88,9 @@ export default function Leaderboard() {
                   {index === 0 && "🥇"}
                   {index === 1 && "🥈"}
                   {index === 2 && "🥉"}
-                  {index > 2 && index + 1}
+                  <Text style={{ fontSize: "1.25rem" }}>
+                    {index > 2 && index + 1}
+                  </Text>
                 </Table.Td>
                 <Table.Td>
                   <Group gap="sm" justify="center">
@@ -96,7 +98,15 @@ export default function Leaderboard() {
                       radius="xl"
                       size="md"
                       variant="filled"
-                      color={index === 0 ? "yellow" : "blue"}
+                      color={
+                        index === 0
+                          ? "yellow.8"
+                          : index === 1
+                            ? "grey"
+                            : index === 2
+                              ? "#A0522D"
+                              : "blue"
+                      }
                     >
                       {player.name[0]}
                     </Avatar>
@@ -111,7 +121,11 @@ export default function Leaderboard() {
                     gradient={
                       index === 0
                         ? { from: "orange", to: "yellow" }
-                        : { from: "blue", to: "cyan" }
+                        : index === 1
+                          ? { from: "#434343", to: "#979797" }
+                          : index === 2
+                            ? { from: "#804A00", to: "#CA7345" }
+                            : { from: "blue", to: "cyan" }
                     }
                     size="xl"
                   >
