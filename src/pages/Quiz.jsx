@@ -3,6 +3,7 @@ import he from "he";
 import clsx from "clsx";
 import getQuestions from "../utils/getQuestions";
 import supabase from "../services/supabase-client.js";
+import { Loader } from "@mantine/core";
 
 export default function Quiz() {
   const [questions, setQuestions] = useState([]);
@@ -108,9 +109,17 @@ export default function Quiz() {
     loadQuestions();
   }
 
-  if (loading) return <h2>Loading...</h2>;
+  if (loading)
+    return (
+      <div className="full-section">
+        <Loader color="blue" size={150} />
+      </div>
+    );
 
-  if (error) return <h2>There was an error: {error.message}</h2>;
+  if (error)
+    return (
+      <h2 className="full-section">There was an error: {error.message}</h2>
+    );
 
   const questionHtml = questions.map((question) => {
     return (
