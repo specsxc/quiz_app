@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom"; // ✅ poprawny import
 import { GoSignOut } from "react-icons/go";
 
 export default function DropdownMenu() {
@@ -41,12 +41,13 @@ export default function DropdownMenu() {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/login" className="menu-link">
+                  {/* Zmieniono ścieżkę z "/login" na "/signin" */}
+                  <NavLink to="/signin" className="menu-link">
                     Login
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/register" className="menu-link">
+                  <NavLink to="/signup" className="menu-link">
                     Register
                   </NavLink>
                 </li>

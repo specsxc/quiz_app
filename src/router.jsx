@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
@@ -15,9 +15,9 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "/quiz", element: <Quiz /> },
       { path: "/leaderboard", element: <Leaderboard /> },
+      { path: "/signin", element: <SignIn /> },
       { path: "*", element: <NotFound /> },
-      { path: "/login", element: <SignIn /> },
-      { path: "/register", element: <SignUp /> },
+      { path: "/signup", element: <SignUp /> },
     ],
   },
 ]);
