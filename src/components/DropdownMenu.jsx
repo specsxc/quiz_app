@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink } from "react-router-dom"; // ✅ poprawny import
+import { NavLink } from "react-router"; // ✅ poprawny import
 import { GoSignOut } from "react-icons/go";
 
 export default function DropdownMenu() {
