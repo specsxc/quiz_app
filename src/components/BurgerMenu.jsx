@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { NavLink } from "react-router";
 
 export default function BurgerMenu() {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, { toggle }] = useDisclosure(false);
 
   console.log(opened);
 
@@ -29,15 +29,18 @@ export default function BurgerMenu() {
 
             <motion.div
               className="menu-burger"
-              initial={{ opacity: 0, y: -5, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -5, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{
+                duration: 0.2,
+                ease: "easeOut",
+              }}
             >
               <ul className="menu-list">
                 <li>
                   <NavLink to="/" className="menu-link">
-                    Start
+                    Home
                   </NavLink>
                 </li>
                 <li>

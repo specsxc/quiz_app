@@ -1,6 +1,6 @@
 import { NavLink, Link } from "react-router";
-import DropdownMenu from "./DropdownMenu";
 import { useState, useEffect } from "react";
+import DropdownMenu from "./DropdownMenu";
 import BurgerMenu from "./BurgerMenu";
 
 export default function Header() {
