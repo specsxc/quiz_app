@@ -1,11 +1,9 @@
 import { NavLink, Link } from "react-router";
-import DropdownMenu from "./DropdownMenu";
-import { useDisclosure } from "@mantine/hooks";
-import { Burger } from "@mantine/core";
 import { useState, useEffect } from "react";
+import DropdownMenu from "./DropdownMenu";
+import BurgerMenu from "./BurgerMenu";
 
 export default function Header() {
-  const [opened, { toggle }] = useDisclosure();
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -21,11 +19,7 @@ export default function Header() {
   return (
     <div className="header-container">
       {width < 720 ? (
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          aria-label="Toggle navigation"
-        />
+        <BurgerMenu />
       ) : (
         <>
           <Link className="site-logo" to="/">
