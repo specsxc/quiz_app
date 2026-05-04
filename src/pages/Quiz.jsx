@@ -4,12 +4,15 @@ import clsx from "clsx";
 import getQuestions from "../utils/getQuestions";
 import supabase from "../services/supabase-client.js";
 import { Loader } from "@mantine/core";
+import { useAuth } from "../context/AuthContext";
 
 export default function Quiz() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasError, setHasError] = useState(false);
+  const [points, setPoints] = useState(0);
+  const { session } = useAuth();
 
   const showResults =
     questions.length > 0 && questions.every((q) => !!q.guessedAnswer);
@@ -17,8 +20,6 @@ export default function Quiz() {
   const correctQuestions = questions.filter(
     (q) => q.guessedAnswer === q.decodedCorrect,
   );
-
-  const score = (correctQuestions.length / questions.length) * 10;
 
   async function loadQuestions() {
     setLoading(true);
@@ -65,47 +66,57 @@ export default function Quiz() {
     }
     setHasError(false);
     setQuestions(selectedAnswers);
-    // oblicz ile poprawnych odpowiedzi
     const goodAnswers = selectedAnswers.filter(
       (q) => q.guessedAnswer === q.decodedCorrect,
     ).length;
-    console.log("tutaj: ", goodAnswers);
-    // jesli jest sesja usera -> uruchom funkcję która doda wynik ("score") do bazy
-    insertData(goodAnswers);
+    console.log(`Good answers: ${goodAnswers}/${questions.length}`);
+    setPoints(goodAnswers * 2);
+    if (session) {
+      insertData(goodAnswers);
+    }
   }
 
   async function insertData(value) {
-    console.log("Questions log:", questions.length);
-    console.log("Value log:", value);
-    const score = (value / questions.length) * 10;
+    if (!session?.user?.id) return;
+    const score = value * 2;
 
-    const { data: currentData } = await supabase
-      .from("names")
+    const { data: currentData, error: selectError } = await supabase
+      .from("user_profiles")
       .select("points")
-      .eq("id", 4)
+      .eq("id", session.user.id)
       .maybeSingle();
 
+    if (selectError) {
+      console.error("Error fetching data: ", selectError.message);
+      return;
+    }
+
     const currentScore = currentData?.points || 0;
+    const finalScore = currentScore + score;
 
-    console.log("Current score: ", currentScore);
-    console.log("Score achieved: ", score);
+    console.log("Current score in database: ", currentScore);
 
-    const { error } = await supabase.from("names").upsert(
+    const { error: upsertError } = await supabase.from("user_profiles").upsert(
       {
-        id: 4,
-        points: currentScore + score,
+        id: session.user.id,
+        name: session.user.user_metadata.name,
+        points: finalScore,
       },
       { onConflict: "id" },
     );
 
-    if (error) {
-      console.error("Błąd zapisu:", error.message);
+    if (upsertError) {
+      console.error("Incorrect record: ", error.message);
+      return;
     } else {
-      console.log("Dane zapisane pomyślnie:", currentScore + score);
+      console.log(
+        `Points saved successfully: ${currentScore} + ${score} = ${finalScore}`,
+      );
     }
   }
 
   function newGame() {
+    setPoints(0);
     loadQuestions();
   }
 
@@ -167,13 +178,12 @@ export default function Quiz() {
               <p className="new-game-text">
                 {`You scored
             ${correctQuestions.length}/${questions.length} correct answers!`}
-                {console.log(score)}
               </p>
               <button type="button" onClick={newGame} className="new-game">
                 Play again
               </button>
             </div>
-            <div>Your score: {score}</div>
+            <div className="score-container">Your score: {points}</div>
           </>
         ) : (
           <button className="check-answers">Check answers</button>

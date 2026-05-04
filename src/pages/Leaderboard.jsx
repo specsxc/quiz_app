@@ -9,10 +9,13 @@ import {
   Paper,
   Group,
   Badge,
+  Center,
 } from "@mantine/core";
+import { useAuth } from "../context/AuthContext";
 
 export default function Leaderboard() {
   const [lead, setLead] = useState([]);
+  const { session } = useAuth();
 
   useEffect(() => {
     fetchBoard();
@@ -20,10 +23,9 @@ export default function Leaderboard() {
 
   async function fetchBoard() {
     try {
-      const { data, error } = await supabase.from("names").select(
+      const { data, error } = await supabase.from("user_profiles").select(
         `
     id,
-    created_at,
     name,
     points
     `,
@@ -37,14 +39,16 @@ export default function Leaderboard() {
       console.error("Error fetching data: ", error);
     }
   }
-  console.log(lead);
+  if (lead.length > 0) {
+    console.log(lead);
+  }
+
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         padding: "40px",
-        maxHeight: "100vh",
       }}
     >
       <Card
@@ -82,58 +86,77 @@ export default function Leaderboard() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {lead.map((player, index) => (
-              <Table.Tr key={index} style={{ fontSize: "2rem" }}>
-                <Table.Td ta="center">
-                  {index === 0 && "🥇"}
-                  {index === 1 && "🥈"}
-                  {index === 2 && "🥉"}
-                  <Text style={{ fontSize: "1.25rem" }}>
-                    {index > 2 && index + 1}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="sm" justify="center">
-                    <Avatar
-                      radius="xl"
-                      size="md"
-                      variant="filled"
-                      color={
-                        index === 0
-                          ? "yellow.8"
-                          : index === 1
-                            ? "grey"
-                            : index === 2
-                              ? "#A0522D"
-                              : "blue"
-                      }
+            {lead.map((player, index) => {
+              const playerHighlight = player.id === session?.user?.id;
+              return (
+                <Table.Tr
+                  key={index}
+                  style={{
+                    fontSize: "2rem",
+                    background:
+                      playerHighlight &&
+                      "linear-gradient(45deg, #74c0fc 0%, #63e6be 100%)",
+                  }}
+                >
+                  <Table.Td ta="center">
+                    <Center style={{ width: 50, height: 50, margin: "0 auto" }}>
+                      {index === 0 && "🥇"}
+                      {index === 1 && "🥈"}
+                      {index === 2 && "🥉"}
+                      <Text style={{ fontSize: "1.5rem" }}>
+                        {index > 2 && index + 1}
+                      </Text>
+                    </Center>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group gap="sm" justify="center">
+                      <Avatar
+                        radius="xl"
+                        size="md"
+                        variant="filled"
+                        color={
+                          index === 0
+                            ? "yellow.8"
+                            : index === 1
+                              ? "grey"
+                              : index === 2
+                                ? "#A0522D"
+                                : "blue"
+                        }
+                      >
+                        {player.name[0]}
+                      </Avatar>
+                      <Text size="lg" fw={index < 3 ? 600 : 400}>
+                        {player.name}
+                      </Text>
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>
+                    <Group
+                      justify="center"
+                      align="center"
+                      style={{ height: "100%" }}
                     >
-                      {player.name[0]}
-                    </Avatar>
-                    <Text size="lg" fw={index < 3 ? 600 : 400}>
-                      {player.name}
-                    </Text>
-                  </Group>
-                </Table.Td>
-                <Table.Td ta="center">
-                  <Badge
-                    variant="gradient"
-                    gradient={
-                      index === 0
-                        ? { from: "orange", to: "yellow" }
-                        : index === 1
-                          ? { from: "#434343", to: "#979797" }
-                          : index === 2
-                            ? { from: "#804A00", to: "#CA7345" }
-                            : { from: "blue", to: "cyan" }
-                    }
-                    size="xl"
-                  >
-                    {player.points} pts
-                  </Badge>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+                      <Badge
+                        variant="gradient"
+                        gradient={
+                          index === 0
+                            ? { from: "orange", to: "yellow" }
+                            : index === 1
+                              ? { from: "#434343", to: "#979797" }
+                              : index === 2
+                                ? { from: "#804A00", to: "#CA7345" }
+                                : { from: "blue", to: "cyan" }
+                        }
+                        size="xl"
+                      >
+                        {player.points} pts
+                      </Badge>
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })}
           </Table.Tbody>
         </Table>
       </Card>

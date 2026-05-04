@@ -1,11 +1,30 @@
 import { useState } from "react";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { GoSignOut } from "react-icons/go";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const { signOut, session } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async (e) => {
+    e.preventDefault();
+
+    const { success, error } = await signOut();
+    if (success) {
+      toast.success("Logout Successful!");
+      setIsOpen(false);
+      navigate("/");
+    } else {
+      toast.error(`Błąd: ${error.message}`);
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
       <MdOutlineAccountCircle
@@ -31,36 +50,65 @@ export default function DropdownMenu() {
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <ul className="menu-list">
+                {session && (
+                  <>
+                    <span className="menu-head account-underline">
+                      Logged in as:{" "}
+                      {session && session?.user?.user_metadata.name}
+                    </span>
+                    <li>
+                      <NavLink
+                        to="/profile"
+                        className="menu-link"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        My Profile
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+                {!session && (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/signin"
+                        className="menu-link"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Login
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/signup"
+                        className="menu-link"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Register
+                      </NavLink>
+                    </li>
+                  </>
+                )}
                 <li>
                   <NavLink
-                    to="/account"
-                    className="menu-link account-underline"
+                    to="/settings"
+                    className="menu-link"
+                    onClick={() => setIsOpen(false)}
                   >
-                    <MdOutlineAccountCircle className="account-icon-menu" />
-                    Account
+                    Settings
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/signin" className="menu-link">
-                    Login
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/signup" className="menu-link">
-                    Register
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/logout" className="menu-link signout">
-                    <GoSignOut className="signout-icon" />
-                    Logout
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/footer" className="menu-link">
-                    Footer
-                  </NavLink>
-                </li>
+                {session && (
+                  <li>
+                    <NavLink
+                      to="/"
+                      onClick={handleSignOut}
+                      className="menu-link"
+                    >
+                      Logout
+                    </NavLink>
+                  </li>
+                )}
               </ul>
             </motion.div>
           </>

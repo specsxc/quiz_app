@@ -6,8 +6,6 @@ import { NavLink } from "react-router";
 export default function BurgerMenu() {
   const [opened, { toggle }] = useDisclosure(false);
 
-  console.log(opened);
-
   return (
     <>
       <Burger
