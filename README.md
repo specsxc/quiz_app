@@ -50,7 +50,7 @@ npm run dev
 
 - **Konfiguracja bazy danych (SQL Editor)**
 
-Aplikacja wymaga określonych tabel i funkcji do przechowywania punktów oraz profili użytkowników.
+_Aplikacja wymaga określonych tabel i funkcji do przechowywania punktów oraz profili użytkowników._
 
 1. Przejdź do swojego panelu sterowania (Dashboard) Supabase.
 
@@ -64,7 +64,7 @@ Aplikacja wymaga określonych tabel i funkcji do przechowywania punktów oraz pr
 
 - **Wyłączenie potwierdzania e-mail**
 
-Domyślnie Supabase wymaga od użytkowników potwierdzenia adresu e-mail przy rejestracji. Aby ułatwić testowanie w fazie deweloperskiej:
+_Domyślnie Supabase wymaga od użytkowników potwierdzenia adresu e-mail przy rejestracji. Aby ułatwić testowanie w fazie deweloperskiej._
 
 1. Przejdź do sekcji Authentication > Sign In / Providers > User Signups.
 
