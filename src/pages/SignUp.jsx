@@ -1,35 +1,49 @@
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [error, setError] = useState("");
+  const { signUpNewUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!fullName || !email || !password) {
-      setError("Please fill in all fields");
-      return;
-    }
-    if (!agreeTerms) {
-      setError("You must agree to the Terms & Conditions");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-    setError("");
-    // Tutaj dodaj faktyczną rejestrację (fetch do API)
-    console.log("Registering", { fullName, email, password });
-    // Po sukcesie możesz przekierować na stronę logowania:
-    // navigate("/signin");
-  };
+  const [error, submitAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      const email = formData.get("email");
+      const fullName = formData.get("fullname");
+      const password = formData.get("password");
+      const agreeTerms = formData.get("terms");
+      const accountType = "Player";
+
+      if (!fullName || !email || !password) {
+        return new Error("Please fill in all fields");
+      }
+      if (!agreeTerms) {
+        return new Error("You must agree to the Terms & Conditions");
+      }
+      if (password.length < 6) {
+        return new Error("Password must be at least 6 characters");
+      }
+
+      const {
+        success,
+        data,
+        error: signUpError,
+      } = await signUpNewUser(email, password, fullName, accountType);
+
+      if (signUpError) {
+        return new Error(signUpError);
+      }
+      if (success && data?.session) {
+        toast.success("Registration successful!");
+        navigate("/");
+        return null;
+      }
+      return null;
+    },
+    null,
+  );
 
   return (
     <div className="signin-container">
@@ -45,48 +59,56 @@ export default function SignUp() {
         <h1>Create Account</h1>
         <p>Join our curated world of intellectual discovery.</p>
 
-        <form onSubmit={handleSubmit}>
+        <form
+          action={submitAction}
+          aria-label="Sign up form"
+          aria-describedby="form-description"
+        >
           {/* Pełna nazwa */}
           <div className="form-group">
-            <label>Full Name</label>
+            <label htmlFor="fullname">Full Name</label>
             <div className="input-icon">
               <span>👤</span>
               <input
                 type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                id="fullname"
+                name="fullname"
                 placeholder="Leonardo da Vinci"
                 required
+                disabled={isPending}
               />
             </div>
           </div>
 
           {/* Email */}
           <div className="form-group">
-            <label>Email Address</label>
+            <label htmlFor="email">Email Address</label>
             <div className="input-icon">
               <span>📧</span>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="email"
+                name="email"
                 placeholder="leo@gallery.com"
                 required
+                autoComplete="email"
+                disabled={isPending}
               />
             </div>
           </div>
 
           {/* Hasło */}
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <div className="input-icon">
               <span>🔒</span>
               <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="password"
+                name="password"
                 placeholder="••••••••"
                 required
+                disabled={isPending}
               />
               <button
                 type="button"
@@ -103,8 +125,9 @@ export default function SignUp() {
             <input
               type="checkbox"
               id="terms"
-              checked={agreeTerms}
-              onChange={(e) => setAgreeTerms(e.target.checked)}
+              name="terms"
+              required
+              disabled={isPending}
             />
             <label htmlFor="terms">
               I agree to the <Link to="/terms">Terms &amp; Conditions</Link> and{" "}
@@ -112,10 +135,10 @@ export default function SignUp() {
             </label>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && <div className="error-message">{error.message}</div>}
 
-          <button type="submit" className="signin-btn">
-            Sign Up →
+          <button type="submit" className="signin-btn" disabled={isPending}>
+            {isPending ? "Signing up..." : "Sign Up →"}
           </button>
         </form>
 
@@ -144,7 +167,7 @@ export default function SignUp() {
             />
             <div className="avatar-count">+2k</div>
           </div>
-          <p>Join 2,000+ Curators</p>
+          <p>Join 2,000+ Players</p>
         </div>
       </div>
     </div>

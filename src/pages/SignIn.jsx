@@ -1,25 +1,39 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
+import { useActionState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { signInUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError("Please fill in all fields");
-      return;
-    }
-    setError("");
-    // Tutaj podmień na prawdziwe logowanie (np. fetch do API)
-    console.log("Logging in", { email, password });
-    // Po udanym logowaniu przekieruj na stronę główną:
-    // navigate("/");
-  };
+  const [error, submitAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      const email = formData.get("email");
+      const password = formData.get("password");
+
+      const {
+        success,
+        data,
+        error: signInError,
+      } = await signInUser(email, password);
+
+      if (signInError) {
+        return new Error(signInError);
+      }
+      if (success && data?.session) {
+        toast.success("Successfully signed in!");
+        navigate("/");
+        return null;
+      }
+      return null;
+    },
+    null,
+  );
 
   return (
     <div className="signin-container">
@@ -33,26 +47,30 @@ export default function SignIn() {
         </div>
 
         <h1>Sign In</h1>
-        <p>Enter your credentials to access your gallery.</p>
+        <p>Enter your credentials to access tons of quizzes.</p>
 
-        <form onSubmit={handleSubmit}>
+        <form action={submitAction}>
           <div className="form-group">
-            <label>Email Address</label>
+            <label htmlFor="email">Email Address</label>
             <div className="input-icon">
               <span>📧</span>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="email"
+                name="email"
                 placeholder="name@example.com"
                 required
+                aria-required="true"
+                aria-invalid={error ? "true" : "false"}
+                aria-describedby={error ? "signin-error" : undefined}
+                disabled={isPending}
               />
             </div>
           </div>
 
           <div className="form-group">
             <div className="password-header">
-              <label>Password</label>
+              <label htmlFor="password">Password</label>
               <Link to="/forgot-password" className="forgot-link">
                 Forgot password?
               </Link>
@@ -61,10 +79,14 @@ export default function SignIn() {
               <span>🔒</span>
               <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                id="password"
                 placeholder="••••••••"
                 required
+                aria-required="true"
+                aria-invalid={error ? "true" : "false"}
+                aria-describedby={error ? "signin-error" : undefined}
+                disabled={isPending}
               />
               <button
                 type="button"
@@ -76,25 +98,33 @@ export default function SignIn() {
             </div>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-
-          <button type="submit" className="signin-btn">
-            Sign In →
+          <button
+            type="submit"
+            className="signin-btn"
+            disabled={isPending}
+            aria-busy={isPending}
+          >
+            {isPending ? "Signing in..." : "Sign In →"}
           </button>
+
+          {error && (
+            <div id="signin-error" role="alert" className="error-message">
+              {error.message}
+            </div>
+          )}
         </form>
 
         <div className="divider">Or continue with</div>
 
         <div className="social-buttons">
           <button className="social-btn">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAIlx5qr--8YrbVHN3DHVB9Dwz1lAK_2wnCjt3PODdzLT_9_ZCDdFQTaTthAzjrpV9w-BfMiV_1Xz7SS9lGuBMZCnsyj18Or2sCfaUU4hbocvf7Sz1lbYmjrmJNuUD2lsjZ6wUFMKpeF5QxYn1daCse90kJqlQW6awDIqwKpunctF7eRYADNIf1oAXf5_hsb36haoWtZ2n80eU9XQQmJo488hhI8wRDiD_VPqQNO9exKPUvphc80CrkThqyJrwASIdxasbWw7kGe4"
-              alt="Google"
-            />
+            <FcGoogle />
             Google
           </button>
           <button className="social-btn">
-            <span>📘</span>
+            <span>
+              <FaFacebook className="social-icon facebook" />
+            </span>
             Facebook
           </button>
         </div>
